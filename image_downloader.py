@@ -3,15 +3,14 @@ from aiohttp import ClientSession
 import os
 
 
-async def download_image(url, folder):
+async def download_image(url, filename):
     async with ClientSession() as session:
-        print("Начало загрузки")
+        print("Начало загрузки", url)
         resp = await session.request(method="GET", url=url)
         data = await resp.read()
         print("Конец загрузки")
-        filename = url[url.rfind('/')+1:]
         print('Запись в файл')
-        with open(os.path.join(folder, filename), mode='wb') as f:
+        with open(filename, mode='wb') as f:
             f.write(data)
         print('Конец записи в файл')
 
@@ -20,7 +19,12 @@ async def main():
     image_folder = './dataset/images'
     os.makedirs(image_folder, exist_ok=True)
     with open('./dataset/image_urls.txt', 'r') as urls:
-        producers = [asyncio.create_task(download_image(url[:-1], image_folder)) for url in urls]
+        producers = [asyncio.create_task(
+            download_image(
+                url[:-1], 
+                os.path.join(image_folder, f"image_{i+1}.jpg")
+                )
+            ) for i, url in enumerate(filter(lambda url: url != "\n", urls))]
         await asyncio.gather(*producers)
 
 
