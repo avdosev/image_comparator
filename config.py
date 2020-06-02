@@ -1,5 +1,7 @@
 model_name = './models/model.hdf5'
-input_shape = (300, 300)
+models_path = './models'
+input_shape = (300, 300, 3)
 images_folder = './dataset/images'
-images_count = 717
-epoch = 10
+images_count = 718
+epoch = 15
+batch = 10
