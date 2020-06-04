@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 import os
-from cv2 import resize, imread
+from utils import *
 import efficientnet.tfkeras
 from tensorflow import keras
-import tensorflow as tf
 from config import *
 from networks import get_model
 import math
@@ -29,7 +28,7 @@ class ImagesSequence(keras.utils.Sequence):
             batch_y[i][index] = 1
 
         return np.array([
-            resize(imread(file_name), input_shape[:2])
+            augment_image(resize_image(load_image(file_name)))
             for file_name in batch_x]), np.array(batch_y)
 
 
@@ -39,15 +38,16 @@ train_dataset = ImagesSequence([os.path.join(images_folder, filename) for filena
 model = get_model(input_shape, 64, images_count)
 
 model.compile(optimizer='adam',
-                  loss='categorical_crossentropy',
-                  metrics=['accuracy'])
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
 
-model.fit(train_dataset,
-          epochs=epoch,
-          callbacks=[
-              keras.callbacks.EarlyStopping(monitor="loss", min_delta=0, patience=7, verbose=0, mode="min"),
-          ]
-          )
+model.fit(
+    train_dataset,
+    epochs=epoch,
+    callbacks=[
+        keras.callbacks.EarlyStopping(monitor="loss", min_delta=0, patience=7, verbose=0, mode="min"),
+    ]
+)
 
 if not os.path.exists(models_path):
     os.makedirs(models_path)
