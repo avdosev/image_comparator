@@ -28,7 +28,7 @@ class ImagesSequence(keras.utils.Sequence):
             batch_y[i][index] = 1
 
         return np.array([
-            augment_image(resize_image(load_image(file_name)))
+            train_pipeline(file_name)
             for file_name in batch_x]), np.array(batch_y)
 
 

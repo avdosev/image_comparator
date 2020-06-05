@@ -12,3 +12,11 @@ def load_image(filename):
 
 def resize_image(image):
     return resize(image, input_shape[:2])
+
+
+def train_pipeline(filename):
+    return resize_image(augment_image(load_image(filename)))
+
+
+def general_pipeline(filename):
+    return resize_image(load_image(filename))

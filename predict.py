@@ -8,28 +8,27 @@ from config import *
 import math
 from datetime import datetime
 from utils import *
+import numpy as np
 from scipy.spatial.distance import cosine
 
 model = keras.models.load_model(model_name)
 model = keras.Model(inputs=[model.input], outputs=[model.layers[-2].output])
 
 
-def similarity_images(images_path):
-    x = np.array([resize_image(load_image(filename)) for filename in images_path])
-    y = model.predict(x)
-    return 1 - cosine(y[0], y[1])
+def similarity_images(images_paths1, images_paths2):
+    assert len(images_paths1) == len(images_paths2)
+    x1 = np.array([resize_image(load_image(filename)) for filename in images_paths1])
+    x2 = np.array([resize_image(load_image(filename)) for filename in images_paths2])
+    y1 = model.predict(x1)
+    y2 = model.predict(x2)
+    cosine_distances = np.array([cosine(image1, image2) for image1, image2 in zip(y1, y2)])
+    similarity = 1 - cosine_distances
+    return similarity
 
 
 if __name__ == '__main__':
-    first_image_path = './dataset/images/image_171.jpg'
-    second_image_path = './dataset/images/image_172.jpg'
-    similarity = similarity_images((first_image_path, second_image_path))
-    print("Похожесть:", similarity)
-    first_image_path = './dataset/images/image_708.jpg'
-    second_image_path = './dataset/images/image_709.jpg'
-    similarity = similarity_images((first_image_path, second_image_path))
-    print("Похожесть:", similarity)
-    first_image_path = './dataset/images/image_190.jpg'
-    second_image_path = './dataset/images/image_709.jpg'
-    similarity = similarity_images((first_image_path, second_image_path))
-    print("Похожесть:", similarity)
+    data = pd.read_csv('./dataset/test.csv')
+    for i in range(1, 3):
+        data[f'image{i}'] = data[f'image{i}'].transform(lambda id: os.path.join(test_images_folder, f"image_{id}.jpg"))
+    similarities = similarity_images(data['image1'], data['image2'])
+    print("Похожесть:", similarities)
