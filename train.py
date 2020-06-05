@@ -21,7 +21,7 @@ class ImagesSequence(keras.utils.Sequence):
     def __getitem__(self, idx):
         batch_x = self.images[idx * self.batch_size:
                               (idx + 1) * self.batch_size]
-        batch_y = [np.zeros(images_count, dtype=np.int) for _ in range(len(batch_x))]
+        batch_y = np.zeros((len(batch_x), images_count), dtype=np.int)
         for i, filename in enumerate(batch_x):
             f, _ = os.path.splitext(os.path.basename(filename))
             index = int(f[f.rfind('_')+1:])
