@@ -1,14 +1,16 @@
-from albumentations import Compose, OneOf,\
-    Blur, MotionBlur, MedianBlur, HorizontalFlip, VerticalFlip, ShiftScaleRotate
+from albumentations import *
 
 
 def augment_image(image):
     aug = OneOf([
-        MotionBlur(),
+        CLAHE(),
+        MotionBlur(blur_limit=3),
         MedianBlur(blur_limit=3),
-        Blur(blur_limit=7),
+        Blur(blur_limit=3),
         HorizontalFlip(),
-        ShiftScaleRotate()
+        ShiftScaleRotate(rotate_limit=15),
+        ImageCompression(),
+        RandomGamma(),
     ])
     image = aug(image=image)['image']
     return image
