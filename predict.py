@@ -5,10 +5,8 @@ import efficientnet.tfkeras
 from tensorflow import keras
 import tensorflow as tf
 from config import *
-import math
 from datetime import datetime
 from utils import *
-import numpy as np
 from scipy.spatial.distance import cosine
 
 model = keras.models.load_model(model_name)

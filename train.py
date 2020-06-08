@@ -36,7 +36,7 @@ train_dataset = ImagesSequence([os.path.join(images_folder, filename) for filena
                                batch)
 
 model = get_model(input_shape, 64, images_count)
-
+model.summary()
 model.compile(optimizer='adam',
               loss='categorical_crossentropy',
               metrics=['accuracy'])

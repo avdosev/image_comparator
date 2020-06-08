@@ -1,9 +1,6 @@
 from cv2 import imread, resize
 from config import input_shape
-
-
-def augment_image(image):
-    return image
+from augment import augment_image
 
 
 def load_image(filename):
