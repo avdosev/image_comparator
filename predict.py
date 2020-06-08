@@ -11,7 +11,7 @@ from scipy.spatial.distance import cosine
 
 model = keras.models.load_model(model_name)
 model = keras.Model(inputs=[model.input], outputs=[model.layers[-2].output])
-
+assert model.output_shape, (None, emb_size)
 
 def similarity_images(images_paths1, images_paths2):
     assert len(images_paths1) == len(images_paths2)

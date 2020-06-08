@@ -35,7 +35,7 @@ class ImagesSequence(keras.utils.Sequence):
 train_dataset = ImagesSequence([os.path.join(images_folder, filename) for filename in os.listdir(images_folder)],
                                batch)
 
-model = get_model(input_shape, 64, images_count)
+model = get_model(input_shape, emb_size, images_count)
 model.summary()
 model.compile(optimizer='adam',
               loss='categorical_crossentropy',
@@ -45,7 +45,7 @@ model.fit(
     train_dataset,
     epochs=epoch,
     callbacks=[
-        keras.callbacks.EarlyStopping(monitor="loss", min_delta=0, patience=7, verbose=0, mode="min"),
+        keras.callbacks.EarlyStopping(monitor="loss", min_delta=0, patience=2, verbose=0, mode="min"),
     ]
 )
 
