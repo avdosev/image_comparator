@@ -12,4 +12,5 @@ def score_model(model, print_similarities=False):
     similarities = similarity_images(data['image1'], data['image2'], model)
     if print_similarities:
         print("Похожести:", similarities)
+        print("Ожидаемые:", data['similarity'].to_numpy())
     return mean_absolute_error(data['similarity'], similarities)
