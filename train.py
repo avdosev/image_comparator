@@ -8,6 +8,7 @@ from config import *
 from networks import get_model
 import math
 from datetime import datetime
+from validation import score_model
 
 
 class ImagesSequence(keras.utils.Sequence):
@@ -35,7 +36,7 @@ class ImagesSequence(keras.utils.Sequence):
 train_dataset = ImagesSequence([os.path.join(images_folder, filename) for filename in os.listdir(images_folder)],
                                batch)
 
-model = get_model(input_shape, emb_size, images_count)
+model, emb_index = get_model(input_shape, emb_size, images_count)
 model.summary()
 model.compile(optimizer='adam',
               loss='categorical_crossentropy',
@@ -53,3 +54,6 @@ if not os.path.exists(models_path):
     os.makedirs(models_path)
 
 model.save(model_name)
+model = keras.Model(inputs=[model.input], outputs=[model.layers[emb_index].output])
+
+print('Score:', score_model(model, print_similarities=True))

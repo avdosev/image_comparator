@@ -9,5 +9,5 @@ def get_model(input_shape, emb_size, num_imgs):
     x = keras.layers.Dense(emb_size, activation='relu')(x)
     x = keras.layers.BatchNormalization()(x)
     x = keras.layers.Dense(num_imgs, activation='softmax')(x)
-    return keras.Model(inputs=base_model.input, outputs=x)
+    return keras.Model(inputs=base_model.input, outputs=x), -2
 
