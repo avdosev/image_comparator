@@ -11,6 +11,8 @@ def augment_image(image):
         ShiftScaleRotate(rotate_limit=15),
         ImageCompression(),
         RandomGamma(),
+        ToGray(),
+        ToSepia()
     ])
     image = aug(image=image)['image']
     return image

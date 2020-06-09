@@ -11,6 +11,6 @@ def similarity_images(images_paths1, images_paths2, model):
     x2 = np.array([resize_image(load_image(filename)) for filename in images_paths2])
     y1 = model.predict(x1)
     y2 = model.predict(x2)
-    cosine_distances = np.array([cosine(image1, image2) for image1, image2 in zip(y1, y2)])
+    cosine_distances = np.array(map(lambda img1, img2: cosine(img1, img2), zip(y1, y2)))
     similarity = 1 - cosine_distances
     return similarity
