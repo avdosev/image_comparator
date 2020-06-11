@@ -1,6 +1,7 @@
 from sklearn.metrics import mean_absolute_error
 from config import *
 import pandas as pd
+import numpy as np
 import os
 from predict import similarity_images
 
@@ -13,4 +14,5 @@ def score_model(model, print_similarities=False):
     if print_similarities:
         print("Похожести:", similarities)
         print("Ожидаемые:", data['similarity'].to_numpy())
+        print('Разность:', np.absolute(similarities-data['similarity'].to_numpy()))
     return mean_absolute_error(data['similarity'], similarities)
