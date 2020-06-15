@@ -4,7 +4,10 @@ from augment import augment_image
 
 
 def load_image(filename):
-    return imread(filename)
+    image = imread(filename)
+    if image.size == 0:
+        raise ValueError(f"Какая то шняга с файлом: {filename}")
+    return image
 
 
 def resize_image(image):
