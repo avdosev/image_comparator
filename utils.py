@@ -5,8 +5,7 @@ from augment import augment_image
 
 def load_image(filename):
     image = imread(filename)
-    if image.size == 0:
-        raise ValueError(f"Какая то шняга с файлом: {filename}")
+    assert image is not None and image.size != 0, f"Какая то шняга с файлом: {filename}"
     return image
 
 
