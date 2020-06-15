@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from utils import *
 import efficientnet.tfkeras
+import tensorflow as tf
 from tensorflow import keras
 from config import *
 from networks import get_model
@@ -13,7 +14,11 @@ from validation import score_model
 
 class ImagesSequence(keras.utils.Sequence):
     def __init__(self, images, batch_size):
-        self.images = images
+        def images_in_count_limit(filename):
+            f, _ = os.path.splitext(os.path.basename(filename))
+            index = int(f[f.rfind('_')+1:])
+            return index < images_count
+        self.images = list(filter(images_in_count_limit, images))
         self.batch_size = batch_size
 
     def __len__(self):
@@ -33,27 +38,44 @@ class ImagesSequence(keras.utils.Sequence):
             for file_name in batch_x]), np.array(batch_y)
 
 
-train_dataset = ImagesSequence([os.path.join(images_folder, filename) for filename in os.listdir(images_folder)],
-                               batch)
+class ValidationPrint(tf.keras.callbacks.Callback):
+    def __init__(self, emb_index, details=False):
+        super().__init__()
+        self.emb_index = emb_index
+        self.details = details
 
-model, emb_index = get_model(input_shape, emb_size, images_count)
-model.summary()
-model.compile(optimizer='adam',
-              loss='categorical_crossentropy',
-              metrics=['accuracy'])
+    def on_epoch_end(self, epoch, logs=None):
+        model = keras.Model(inputs=[self.model.input], outputs=[self.model.layers[self.emb_index].output])
+        print("score: ", score_model(model, print_similarities=self.details))
 
-model.fit(
-    train_dataset,
-    epochs=epoch,
-    callbacks=[
-        keras.callbacks.EarlyStopping(monitor="loss", min_delta=0, patience=2, verbose=0, mode="min"),
-    ]
-)
 
-if not os.path.exists(models_path):
-    os.makedirs(models_path)
+def main():
+    train_dataset = ImagesSequence([os.path.join(images_folder, filename) for filename in os.listdir(images_folder)],
+                                   batch)
 
-model.save(model_name)
-model = keras.Model(inputs=[model.input], outputs=[model.layers[emb_index].output])
+    model, emb_index = get_model(input_shape, emb_size, images_count)
+    model.summary()
+    model.compile(optimizer='adam',
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
 
-print('Score:', score_model(model, print_similarities=True))
+    model.fit(
+        train_dataset,
+        epochs=epoch,
+        callbacks=[
+            keras.callbacks.EarlyStopping(monitor="loss", min_delta=0, patience=2, verbose=0, mode="min"),
+            ValidationPrint(emb_index),
+        ]
+    )
+
+    if not os.path.exists(models_path):
+        os.makedirs(models_path)
+
+    model.save(model_name)
+    model = keras.Model(inputs=[model.input], outputs=[model.layers[emb_index].output])
+    print("Final validation")
+    print('Score:', score_model(model, print_similarities=True))
+
+
+if __name__ == '__main__':
+    main()
