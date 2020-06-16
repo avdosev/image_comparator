@@ -45,8 +45,10 @@ class ValidationPrint(tf.keras.callbacks.Callback):
         self.details = details
 
     def on_epoch_end(self, epoch, logs=None):
-        model = keras.Model(inputs=[self.model.input], outputs=[self.model.layers[self.emb_index].output])
-        print("score: ", score_model(model, print_similarities=self.details))
+        if logs is not None:
+            model = keras.Model(inputs=[self.model.input], outputs=[self.model.layers[self.emb_index].output])
+            score = score_model(model, print_similarities=self.details)
+            logs['val_score'] = score
 
 
 def main():
@@ -59,17 +61,24 @@ def main():
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
 
+    if not os.path.exists(models_path):
+        os.makedirs(models_path)
+
     model.fit(
         train_dataset,
         epochs=epoch,
         callbacks=[
             keras.callbacks.EarlyStopping(monitor="loss", min_delta=0, patience=2, verbose=0, mode="min"),
             ValidationPrint(emb_index),
+            keras.callbacks.ModelCheckpoint(
+                filepath=os.path.join(models_path, 'model_best.hdf5'),
+                save_weights_only=False,
+                monitor='val_score',
+                mode='min',
+                save_best_only=True
+            )
         ]
     )
-
-    if not os.path.exists(models_path):
-        os.makedirs(models_path)
 
     model.save(model_name)
     model = keras.Model(inputs=[model.input], outputs=[model.layers[emb_index].output])
