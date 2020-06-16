@@ -48,8 +48,8 @@ class ValidationPrint(tf.keras.callbacks.Callback):
         if logs is not None:
             model = keras.Model(inputs=[self.model.input], outputs=[self.model.layers[self.emb_index].output])
             score = score_model(model, print_similarities=self.details)
-            print(' val_score: ', score, end='')
             logs['val_score'] = score
+            print('\n val_score: ', score)
 
 
 def main():
