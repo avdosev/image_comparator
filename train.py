@@ -8,7 +8,6 @@ from tensorflow import keras
 from config import *
 from networks import get_model
 import math
-from datetime import datetime
 from validation import score_model
 
 
@@ -84,6 +83,11 @@ def main():
     model.save(model_name)
     model = keras.Model(inputs=[model.input], outputs=[model.layers[emb_index].output])
     print("Final validation")
+    print('Score:', score_model(model, print_similarities=True))
+
+    model = keras.models.load_model(os.path.join(models_path, 'model_best.hdf5'))
+    model = keras.Model(inputs=[model.input], outputs=[model.layers[emb_index].output])
+    print("Final best validation")
     print('Score:', score_model(model, print_similarities=True))
 
 

@@ -1,4 +1,4 @@
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, r2_score
 from config import *
 import pandas as pd
 import numpy as np
@@ -15,4 +15,4 @@ def score_model(model, print_similarities=False):
         print("Похожести:", similarities)
         print("Ожидаемые:", data['similarity'].to_numpy())
         print('Разность:', np.absolute(similarities-data['similarity'].to_numpy()))
-    return mean_absolute_error(data['similarity'], similarities)
+    return -r2_score(data['similarity'], similarities)
