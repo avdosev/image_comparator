@@ -68,7 +68,7 @@ def main():
         train_dataset,
         epochs=epoch,
         callbacks=[
-            keras.callbacks.EarlyStopping(monitor="loss", min_delta=0, patience=2, verbose=0, mode="min"),
+            keras.callbacks.EarlyStopping(monitor="loss", min_delta=0, patience=4, verbose=0, mode="min"),
             ValidationPrint(emb_index),
             keras.callbacks.ModelCheckpoint(
                 filepath=os.path.join(models_path, 'model_best.hdf5'),
@@ -76,7 +76,9 @@ def main():
                 monitor='val_score',
                 mode='min',
                 save_best_only=True
-            )
+            ),
+            keras.callbacks.ReduceLROnPlateau(monitor='loss', mode='min', factor=0.2,
+                                              patience=2, min_lr=0.00001)
         ]
     )
 

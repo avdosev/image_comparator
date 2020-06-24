@@ -15,5 +15,5 @@ def similarity_images(images_paths1, images_paths2, model):
     y1, y2 = y[:b], y[b:]
     assert len(y1) == len(y2)
     c_distances = np.array([cosine_distances(im1.reshape(1, -1), im2.reshape(1, -1))[0][0] for im1, im2 in zip(y1, y2)])
-    similarity = 1 - c_distances
+    similarity = 1 - np.clip(c_distances, 0, 1)
     return similarity
